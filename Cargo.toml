@@ -1,0 +1,6 @@
+[package]
+name = "flat_hash_map"
+version = "0.1.0"
+authors = ["Jeff Hajewski <jeff.hajewski@gmail.com>"]
+
+[dependencies]
