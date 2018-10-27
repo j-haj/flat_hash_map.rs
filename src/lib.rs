@@ -1,28 +1,10 @@
 use std::usize;
 use std::hash::Hash;
 
-pub trait Hashable {
-    fn hash(&self) -> usize;
-}
-
-impl Hashable for i32 {
-    fn hash(&self) -> usize { *self as usize }
-}
-
-impl Hashable for i64 {
-    fn hash(&self) -> usize { *self as usize }
-}
-
-#[derive(Copy,Default)]
-struct MapItem<K, V> where K: Clone+Default+Eq+Hash, V: Default+Clone {
+#[derive(Clone,Default,Eq,PartialEq,Hash)]
+struct MapItem<K, V> where K: Clone+Default+PartialEq+Hash, V: Default+Clone {
     key: K,
     value: V,
-}
-
-impl<K, V> Clone for MapItem<K, V> where K: Clone+Default+Eq+Hash, V: Default+Clone {
-    fn clone(&self) -> MapItem<K, V> {
-        MapItem{key: self.key.clone(), value: self.value.clone()}
-    }
 }
 
 struct FlatHashMap<K, V> where K: Clone+Default+Eq+Hash, V: Default+Clone {
@@ -61,7 +43,7 @@ impl<K:, V> FlatHashMap<K, V> where K: Clone+Default+Eq+Hash, V: Default+Clone {
         let k = self.fhash(key.hash()) % self.capacity();
         for p in self.data[k].iter() {
             if p.key == key {
-                return Some(V);
+                return Some(p.value);
             }
         }
         return None;
@@ -86,7 +68,7 @@ impl<K:, V> FlatHashMap<K, V> where K: Clone+Default+Eq+Hash, V: Default+Clone {
 mod tests {
     #[test]
     fn insert_empty() {
-        let mut m = FlatHashMap<i64, String>::new();
+        let mut m: FlatHashMap<i64, String> = FlatHashMap::new();
         assert_eq(m.len(), 0);
         m.insert(5, "five");
         assert_eq(m.len(), 1);
